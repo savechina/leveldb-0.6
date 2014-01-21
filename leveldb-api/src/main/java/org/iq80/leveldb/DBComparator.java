@@ -21,9 +21,16 @@ import java.util.Comparator;
 
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
+ *         <p/>
+ *         数据库数据比较器
  */
-public interface DBComparator extends Comparator<byte[]>{
+public interface DBComparator extends Comparator<byte[]> {
 
+    /**
+     * 返回比较器名称
+     *
+     * @return 比较器名称
+     */
     public String name();
 
     /**
@@ -37,6 +44,7 @@ public interface DBComparator extends Comparator<byte[]>{
     byte[] findShortestSeparator(byte[] start, byte[] limit);
 
     /**
+     * 返回大于等于给定数据KEY的最小的KEY，
      * returns a 'short key' where the 'short key' >= key.
      * Simple comparator implementations should return key unchanged,
      *

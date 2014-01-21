@@ -21,9 +21,24 @@ import java.io.Closeable;
 
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
+ *         <p/>
+ *         支持批量写操作接口
  */
 public interface WriteBatch extends Closeable {
-
+    /**
+     * 更新数据
+     *
+     * @param key   数据Key
+     * @param value 数据Value
+     * @return WriteBatch 批量写操作对象
+     */
     public WriteBatch put(byte[] key, byte[] value);
+
+    /**
+     * 批量删除给定的Key
+     *
+     * @param key 数据Key
+     * @return WriteBatch 指写操作对象
+     */
     public WriteBatch delete(byte[] key);
 }

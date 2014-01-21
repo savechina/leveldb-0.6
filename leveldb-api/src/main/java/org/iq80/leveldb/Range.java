@@ -19,10 +19,19 @@ package org.iq80.leveldb;
 
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
+ *         <p/>
+ *         数值范围对象
  */
 public class Range {
 
+    /**
+     * 开始
+     */
     final private byte[] start;
+
+    /**
+     * 结束
+     */
     final private byte[] limit;
 
     public byte[] limit() {
@@ -33,7 +42,14 @@ public class Range {
         return start;
     }
 
+    /**
+     * 开始与结束不能为空null
+     *
+     * @param start
+     * @param limit
+     */
     public Range(byte[] start, byte[] limit) {
+
         Options.checkArgNotNull(start, "start");
         Options.checkArgNotNull(limit, "limit");
         this.limit = limit;

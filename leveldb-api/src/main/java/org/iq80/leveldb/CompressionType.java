@@ -17,11 +17,26 @@
  */
 package org.iq80.leveldb;
 
-public enum CompressionType
-{
+/**
+ * 数据库压缩类型
+ */
+public enum CompressionType {
+    /**
+     * 不进行压缩处理
+     */
     NONE(0x00),
+
+    /**
+     * 使用SNAPPY算法进行压缩处理
+     */
     SNAPPY(0x01);
 
+    /**
+     * 返回给定持久化ID 的压缩类型
+     *
+     * @param persistentId 压缩类型ID
+     * @return 压缩类型 CompressionType
+     */
     public static CompressionType getCompressionTypeByPersistentId(int persistentId) {
         for (CompressionType compressionType : CompressionType.values()) {
             if (compressionType.persistentId == persistentId) {
@@ -31,15 +46,16 @@ public enum CompressionType
         throw new IllegalArgumentException("Unknown persistentId " + persistentId);
     }
 
+    /**
+     * 压缩类型值
+     */
     private final int persistentId;
 
-    CompressionType(int persistentId)
-    {
+    CompressionType(int persistentId) {
         this.persistentId = persistentId;
     }
 
-    public int persistentId()
-    {
+    public int persistentId() {
         return persistentId;
     }
 }

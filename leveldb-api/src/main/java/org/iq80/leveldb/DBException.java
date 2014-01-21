@@ -19,6 +19,8 @@ package org.iq80.leveldb;
 
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
+ *
+ * 数据库异常对象
  */
 public class DBException extends RuntimeException {
     public DBException() {

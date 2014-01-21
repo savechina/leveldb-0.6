@@ -22,13 +22,37 @@ import java.io.IOException;
 
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
+ *         <p/>
+ *         DBFactory 数据库工厂类
  */
 public interface DBFactory {
 
+    /**
+     * 给定数据文件创建数据库对象
+     *
+     * @param path    文件
+     * @param options 数据库参数
+     * @return 数据库对象 DB
+     * @throws IOException 打开数据库IO异常
+     */
     public DB open(File path, Options options) throws IOException;
 
+    /**
+     * 删除给定目录文件的数据库
+     *
+     * @param path    数据库文件
+     * @param options 数据库参数
+     * @throws IOException 操作IO异常
+     */
     public void destroy(File path, Options options) throws IOException;
 
+    /**
+     * 修复给定数据文件的数据库
+     *
+     * @param path    数据库文件
+     * @param options 数据库参数
+     * @throws IOException 修复操作IO异常
+     */
     public void repair(File path, Options options) throws IOException;
 
 }

@@ -19,9 +19,16 @@ package org.iq80.leveldb;
 
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
+ *         <p/>
+ *         日志记录接口
  */
 public interface Logger {
 
+    /**
+     * 记录日志信息
+     *
+     * @param message 日志消息
+     */
     public void log(String message);
 
 }

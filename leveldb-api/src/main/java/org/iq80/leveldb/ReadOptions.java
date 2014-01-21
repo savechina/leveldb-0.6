@@ -17,10 +17,28 @@
  */
 package org.iq80.leveldb;
 
+/**
+ * 读操作参数选项
+ */
 public class ReadOptions
 {
+    /**
+     * 是否验证校验和
+     *
+     * 默认不验证
+     */
     private boolean verifyChecksums = false;
+
+    /**
+     * 是否填充缓存
+     *
+     * 默认填充缓存
+     */
     private boolean fillCache = true;
+
+    /**
+     * 读取快照
+     */
     private Snapshot snapshot;
 
     public Snapshot snapshot()
