@@ -6,6 +6,9 @@ import org.iq80.leveldb.table.Table;
 
 import java.util.Map.Entry;
 
+/**
+ * 表迭代器
+ */
 public final class TableIterator extends AbstractSeekingIterator<Slice, Slice>
 {
     private final Table table;
