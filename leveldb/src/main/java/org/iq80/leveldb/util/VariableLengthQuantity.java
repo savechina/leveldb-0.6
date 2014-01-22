@@ -19,12 +19,16 @@ package org.iq80.leveldb.util;
 
 import java.nio.ByteBuffer;
 
+/**
+ * 可变长度编码/解码操作
+ */
 public final class VariableLengthQuantity
 {
     private VariableLengthQuantity()
     {
     }
 
+    
     public static int variableLengthSize(int value)
     {
         int size = 1;
