@@ -33,32 +33,61 @@ import static org.iq80.leveldb.util.SizeOf.*;
 
 /**
  * Little Endian slice of a byte array.
+ * <p/>
+ * 由低到高顺序存储的字节数组分片
  */
-public final class Slice implements Comparable<Slice>
-{
+public final class Slice implements Comparable<Slice> {
+    /**
+     * 字节数据
+     */
     private final byte[] data;
+
+    /**
+     * 当前偏移量
+     */
     private final int offset;
+
+    /**
+     * 分片长度
+     */
     private final int length;
 
+    /**
+     * 字节数组分片HASH值
+     */
     private int hash;
 
-    public Slice(int length)
-    {
+    /**
+     * 创建给定长度，数据为空的字节数组分片
+     *
+     * @param length 长度
+     */
+    public Slice(int length) {
         data = new byte[length];
         this.offset = 0;
         this.length = length;
     }
 
-    public Slice(byte[] data)
-    {
+    /**
+     * 给定字节数组，创建字节数组分片
+     *
+     * @param data 字节数组数据 不能为null
+     */
+    public Slice(byte[] data) {
         Preconditions.checkNotNull(data, "array is null");
         this.data = data;
         this.offset = 0;
         this.length = data.length;
     }
 
-    public Slice(byte[] data, int offset, int length)
-    {
+    /**
+     * 给定字节数组数据，长度、偏移量 创建字节数组分片
+     *
+     * @param data   字节数组数据 不能为null
+     * @param offset 偏移量
+     * @param length 分片长度
+     */
+    public Slice(byte[] data, int offset, int length) {
         Preconditions.checkNotNull(data, "array is null");
         this.data = data;
         this.offset = offset;
@@ -67,25 +96,24 @@ public final class Slice implements Comparable<Slice>
 
     /**
      * Length of this slice.
+     * 分片长度
      */
-    public int length()
-    {
+    public int length() {
         return length;
     }
 
     /**
      * Gets the array underlying this slice.
+     * 获取字节分片 原始数据字节数组
      */
-    public byte[] getRawArray()
-    {
+    public byte[] getRawArray() {
         return data;
     }
 
     /**
      * Gets the offset of this slice in the underlying array.
      */
-    public int getRawOffset()
-    {
+    public int getRawOffset() {
         return offset;
     }
 
@@ -93,10 +121,9 @@ public final class Slice implements Comparable<Slice>
      * Gets a byte at the specified absolute {@code index} in this buffer.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 1} is greater than {@code this.capacity}
+     *                                   {@code index + 1} is greater than {@code this.capacity}
      */
-    public byte getByte(int index)
-    {
+    public byte getByte(int index) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_BYTE, this.length);
         index += offset;
         return data[index];
@@ -104,13 +131,12 @@ public final class Slice implements Comparable<Slice>
 
     /**
      * Gets an unsigned byte at the specified absolute {@code index} in this
-     * buffer.  
+     * buffer.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 1} is greater than {@code this.capacity}
+     *                                   {@code index + 1} is greater than {@code this.capacity}
      */
-    public short getUnsignedByte(int index)
-    {
+    public short getUnsignedByte(int index) {
         return (short) (getByte(index) & 0xFF);
     }
 
@@ -119,10 +145,9 @@ public final class Slice implements Comparable<Slice>
      * this slice.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 2} is greater than {@code this.capacity}
+     *                                   {@code index + 2} is greater than {@code this.capacity}
      */
-    public short getShort(int index)
-    {
+    public short getShort(int index) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_SHORT, this.length);
         index += offset;
         return (short) (data[index] & 0xFF | data[index + 1] << 8);
@@ -130,13 +155,12 @@ public final class Slice implements Comparable<Slice>
 
     /**
      * Gets a 32-bit integer at the specified absolute {@code index} in
-     * this buffer. 
+     * this buffer.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 4} is greater than {@code this.capacity}
+     *                                   {@code index + 4} is greater than {@code this.capacity}
      */
-    public int getInt(int index)
-    {
+    public int getInt(int index) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_INT, this.length);
         index += offset;
         return (data[index] & 0xff) |
@@ -147,13 +171,12 @@ public final class Slice implements Comparable<Slice>
 
     /**
      * Gets a 64-bit long integer at the specified absolute {@code index} in
-     * this buffer. 
+     * this buffer.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 8} is greater than {@code this.capacity}
+     *                                   {@code index + 8} is greater than {@code this.capacity}
      */
-    public long getLong(int index)
-    {
+    public long getLong(int index) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_LONG, this.length);
         index += offset;
         return ((long) data[index] & 0xff) |
@@ -171,16 +194,15 @@ public final class Slice implements Comparable<Slice>
      * the specified absolute {@code index}.
      *
      * @param dstIndex the first index of the destination
-     * @param length the number of bytes to transfer
+     * @param length   the number of bytes to transfer
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0},
-     * if the specified {@code dstIndex} is less than {@code 0},
-     * if {@code index + length} is greater than
-     * {@code this.capacity}, or
-     * if {@code dstIndex + length} is greater than
-     * {@code dst.capacity}
+     *                                   if the specified {@code dstIndex} is less than {@code 0},
+     *                                   if {@code index + length} is greater than
+     *                                   {@code this.capacity}, or
+     *                                   if {@code dstIndex + length} is greater than
+     *                                   {@code dst.capacity}
      */
-    public void getBytes(int index, Slice dst, int dstIndex, int length)
-    {
+    public void getBytes(int index, Slice dst, int dstIndex, int length) {
         getBytes(index, dst.data, dstIndex, length);
     }
 
@@ -189,29 +211,26 @@ public final class Slice implements Comparable<Slice>
      * the specified absolute {@code index}.
      *
      * @param destinationIndex the first index of the destination
-     * @param length the number of bytes to transfer
+     * @param length           the number of bytes to transfer
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0},
-     * if the specified {@code dstIndex} is less than {@code 0},
-     * if {@code index + length} is greater than
-     * {@code this.capacity}, or
-     * if {@code dstIndex + length} is greater than
-     * {@code dst.length}
+     *                                   if the specified {@code dstIndex} is less than {@code 0},
+     *                                   if {@code index + length} is greater than
+     *                                   {@code this.capacity}, or
+     *                                   if {@code dstIndex + length} is greater than
+     *                                   {@code dst.length}
      */
-    public void getBytes(int index, byte[] destination, int destinationIndex, int length)
-    {
+    public void getBytes(int index, byte[] destination, int destinationIndex, int length) {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         Preconditions.checkPositionIndexes(destinationIndex, destinationIndex + length, destination.length);
         index += offset;
         System.arraycopy(data, index, destination, destinationIndex, length);
     }
 
-    public byte[] getBytes()
-    {
+    public byte[] getBytes() {
         return getBytes(0, length);
     }
 
-    public byte[] getBytes(int index, int length)
-    {
+    public byte[] getBytes(int index, int length) {
         index += offset;
         if (index == 0) {
             return Arrays.copyOf(data, length);
@@ -228,11 +247,10 @@ public final class Slice implements Comparable<Slice>
      * reaches its limit.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * if {@code index + dst.remaining()} is greater than
-     * {@code this.capacity}
+     *                                   if {@code index + dst.remaining()} is greater than
+     *                                   {@code this.capacity}
      */
-    public void getBytes(int index, ByteBuffer destination)
-    {
+    public void getBytes(int index, ByteBuffer destination) {
         Preconditions.checkPositionIndex(index, this.length);
         index += offset;
         destination.put(data, index, Math.min(length, destination.remaining()));
@@ -244,13 +262,12 @@ public final class Slice implements Comparable<Slice>
      *
      * @param length the number of bytes to transfer
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * if {@code index + length} is greater than
-     * {@code this.capacity}
-     * @throws java.io.IOException if the specified stream threw an exception during I/O
+     *                                   if {@code index + length} is greater than
+     *                                   {@code this.capacity}
+     * @throws java.io.IOException       if the specified stream threw an exception during I/O
      */
     public void getBytes(int index, OutputStream out, int length)
-            throws IOException
-    {
+            throws IOException {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         index += offset;
         out.write(data, index, length);
@@ -263,13 +280,12 @@ public final class Slice implements Comparable<Slice>
      * @param length the maximum number of bytes to transfer
      * @return the actual number of bytes written out to the specified channel
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * if {@code index + length} is greater than
-     * {@code this.capacity}
-     * @throws java.io.IOException if the specified channel threw an exception during I/O
+     *                                   if {@code index + length} is greater than
+     *                                   {@code this.capacity}
+     * @throws java.io.IOException       if the specified channel threw an exception during I/O
      */
     public int getBytes(int index, GatheringByteChannel out, int length)
-            throws IOException
-    {
+            throws IOException {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         index += offset;
         return out.write(ByteBuffer.wrap(data, index, length));
@@ -281,10 +297,9 @@ public final class Slice implements Comparable<Slice>
      * value are ignored.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 2} is greater than {@code this.capacity}
+     *                                   {@code index + 2} is greater than {@code this.capacity}
      */
-    public void setShort(int index, int value)
-    {
+    public void setShort(int index, int value) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_SHORT, this.length);
         index += offset;
         data[index] = (byte) (value);
@@ -296,10 +311,9 @@ public final class Slice implements Comparable<Slice>
      * {@code index} in this buffer.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 4} is greater than {@code this.capacity}
+     *                                   {@code index + 4} is greater than {@code this.capacity}
      */
-    public void setInt(int index, int value)
-    {
+    public void setInt(int index, int value) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_INT, this.length);
         index += offset;
         data[index] = (byte) (value);
@@ -313,10 +327,9 @@ public final class Slice implements Comparable<Slice>
      * {@code index} in this buffer.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 8} is greater than {@code this.capacity}
+     *                                   {@code index + 8} is greater than {@code this.capacity}
      */
-    public void setLong(int index, long value)
-    {
+    public void setLong(int index, long value) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_LONG, this.length);
         index += offset;
         data[index] = (byte) (value);
@@ -334,10 +347,9 @@ public final class Slice implements Comparable<Slice>
      * buffer.  The 24 high-order bits of the specified value are ignored.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * {@code index + 1} is greater than {@code this.capacity}
+     *                                   {@code index + 1} is greater than {@code this.capacity}
      */
-    public void setByte(int index, int value)
-    {
+    public void setByte(int index, int value) {
         Preconditions.checkPositionIndexes(index, index + SIZE_OF_BYTE, this.length);
         index += offset;
         data[index] = (byte) value;
@@ -348,16 +360,15 @@ public final class Slice implements Comparable<Slice>
      * the specified absolute {@code index}.
      *
      * @param srcIndex the first index of the source
-     * @param length the number of bytes to transfer
+     * @param length   the number of bytes to transfer
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0},
-     * if the specified {@code srcIndex} is less than {@code 0},
-     * if {@code index + length} is greater than
-     * {@code this.capacity}, or
-     * if {@code srcIndex + length} is greater than
-     * {@code src.capacity}
+     *                                   if the specified {@code srcIndex} is less than {@code 0},
+     *                                   if {@code index + length} is greater than
+     *                                   {@code this.capacity}, or
+     *                                   if {@code srcIndex + length} is greater than
+     *                                   {@code src.capacity}
      */
-    public void setBytes(int index, Slice src, int srcIndex, int length)
-    {
+    public void setBytes(int index, Slice src, int srcIndex, int length) {
         setBytes(index, src.data, src.offset + srcIndex, length);
     }
 
@@ -366,13 +377,12 @@ public final class Slice implements Comparable<Slice>
      * the specified absolute {@code index}.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0},
-     * if the specified {@code srcIndex} is less than {@code 0},
-     * if {@code index + length} is greater than
-     * {@code this.capacity}, or
-     * if {@code srcIndex + length} is greater than {@code src.length}
+     *                                   if the specified {@code srcIndex} is less than {@code 0},
+     *                                   if {@code index + length} is greater than
+     *                                   {@code this.capacity}, or
+     *                                   if {@code srcIndex + length} is greater than {@code src.length}
      */
-    public void setBytes(int index, byte[] source, int sourceIndex, int length)
-    {
+    public void setBytes(int index, byte[] source, int sourceIndex, int length) {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         Preconditions.checkPositionIndexes(sourceIndex, sourceIndex + length, source.length);
         index += offset;
@@ -385,11 +395,10 @@ public final class Slice implements Comparable<Slice>
      * reaches its limit.
      *
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * if {@code index + src.remaining()} is greater than
-     * {@code this.capacity}
+     *                                   if {@code index + src.remaining()} is greater than
+     *                                   {@code this.capacity}
      */
-    public void setBytes(int index, ByteBuffer source)
-    {
+    public void setBytes(int index, ByteBuffer source) {
         Preconditions.checkPositionIndexes(index, index + source.remaining(), this.length);
         index += offset;
         source.get(data, index, source.remaining());
@@ -401,14 +410,13 @@ public final class Slice implements Comparable<Slice>
      *
      * @param length the number of bytes to transfer
      * @return the actual number of bytes read in from the specified channel.
-     *         {@code -1} if the specified channel is closed.
+     * {@code -1} if the specified channel is closed.
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * if {@code index + length} is greater than {@code this.capacity}
-     * @throws java.io.IOException if the specified stream threw an exception during I/O
+     *                                   if {@code index + length} is greater than {@code this.capacity}
+     * @throws java.io.IOException       if the specified stream threw an exception during I/O
      */
     public int setBytes(int index, InputStream in, int length)
-            throws IOException
-    {
+            throws IOException {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         index += offset;
         int readBytes = 0;
@@ -417,8 +425,7 @@ public final class Slice implements Comparable<Slice>
             if (localReadBytes < 0) {
                 if (readBytes == 0) {
                     return -1;
-                }
-                else {
+                } else {
                     break;
                 }
             }
@@ -436,14 +443,13 @@ public final class Slice implements Comparable<Slice>
      *
      * @param length the maximum number of bytes to transfer
      * @return the actual number of bytes read in from the specified channel.
-     *         {@code -1} if the specified channel is closed.
+     * {@code -1} if the specified channel is closed.
      * @throws IndexOutOfBoundsException if the specified {@code index} is less than {@code 0} or
-     * if {@code index + length} is greater than {@code this.capacity}
-     * @throws java.io.IOException if the specified channel threw an exception during I/O
+     *                                   if {@code index + length} is greater than {@code this.capacity}
+     * @throws java.io.IOException       if the specified channel threw an exception during I/O
      */
     public int setBytes(int index, ScatteringByteChannel in, int length)
-            throws IOException
-    {
+            throws IOException {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         index += offset;
         ByteBuffer buf = ByteBuffer.wrap(data, index, length);
@@ -453,19 +459,16 @@ public final class Slice implements Comparable<Slice>
             int localReadBytes;
             try {
                 localReadBytes = in.read(buf);
-            }
-            catch (ClosedChannelException e) {
+            } catch (ClosedChannelException e) {
                 localReadBytes = -1;
             }
             if (localReadBytes < 0) {
                 if (readBytes == 0) {
                     return -1;
-                }
-                else {
+                } else {
                     break;
                 }
-            }
-            else if (localReadBytes == 0) {
+            } else if (localReadBytes == 0) {
                 break;
             }
             readBytes += localReadBytes;
@@ -475,8 +478,7 @@ public final class Slice implements Comparable<Slice>
     }
 
     public int setBytes(int index, FileChannel in, int position, int length)
-            throws IOException
-    {
+            throws IOException {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         index += offset;
         ByteBuffer buf = ByteBuffer.wrap(data, index, length);
@@ -486,19 +488,16 @@ public final class Slice implements Comparable<Slice>
             int localReadBytes;
             try {
                 localReadBytes = in.read(buf, position + readBytes);
-            }
-            catch (ClosedChannelException e) {
+            } catch (ClosedChannelException e) {
                 localReadBytes = -1;
             }
             if (localReadBytes < 0) {
                 if (readBytes == 0) {
                     return -1;
-                }
-                else {
+                } else {
                     break;
                 }
-            }
-            else if (localReadBytes == 0) {
+            } else if (localReadBytes == 0) {
                 break;
             }
             readBytes += localReadBytes;
@@ -507,8 +506,7 @@ public final class Slice implements Comparable<Slice>
         return readBytes;
     }
 
-    public Slice copySlice()
-    {
+    public Slice copySlice() {
         return copySlice(0, length);
     }
 
@@ -516,8 +514,7 @@ public final class Slice implements Comparable<Slice>
      * Returns a copy of this buffer's sub-region.  Modifying the content of
      * the returned buffer or this buffer does not affect each other at all.
      */
-    public Slice copySlice(int index, int length)
-    {
+    public Slice copySlice(int index, int length) {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
 
         index += offset;
@@ -526,13 +523,11 @@ public final class Slice implements Comparable<Slice>
         return new Slice(copiedArray);
     }
 
-    public byte[] copyBytes()
-    {
+    public byte[] copyBytes() {
         return copyBytes(0, length);
     }
 
-    public byte[] copyBytes(int index, int length)
-    {
+    public byte[] copyBytes(int index, int length) {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         index += offset;
         if (index == 0) {
@@ -549,8 +544,7 @@ public final class Slice implements Comparable<Slice>
      * of the returned buffer or this buffer affects each other's content
      * while they maintain separate indexes and marks.
      */
-    public Slice slice()
-    {
+    public Slice slice() {
         return slice(0, length);
     }
 
@@ -559,8 +553,7 @@ public final class Slice implements Comparable<Slice>
      * the returned buffer or this buffer affects each other's content while
      * they maintain separate indexes and marks.
      */
-    public Slice slice(int index, int length)
-    {
+    public Slice slice(int index, int length) {
         if (index == 0 && length == this.length) {
             return this;
         }
@@ -575,16 +568,14 @@ public final class Slice implements Comparable<Slice>
     /**
      * Creates an input stream over this slice.
      */
-    public SliceInput input()
-    {
+    public SliceInput input() {
         return new SliceInput(this);
     }
 
     /**
      * Creates an output stream over this slice.
      */
-    public SliceOutput output()
-    {
+    public SliceOutput output() {
         return new BasicSliceOutput(this);
     }
 
@@ -592,8 +583,7 @@ public final class Slice implements Comparable<Slice>
      * Converts this buffer's readable bytes into a NIO buffer.  The returned
      * buffer shares the content with this buffer.
      */
-    public ByteBuffer toByteBuffer()
-    {
+    public ByteBuffer toByteBuffer() {
         return toByteBuffer(0, length);
     }
 
@@ -601,16 +591,14 @@ public final class Slice implements Comparable<Slice>
      * Converts this buffer's sub-region into a NIO buffer.  The returned
      * buffer shares the content with this buffer.
      */
-    public ByteBuffer toByteBuffer(int index, int length)
-    {
+    public ByteBuffer toByteBuffer(int index, int length) {
         Preconditions.checkPositionIndexes(index, index + length, this.length);
         index += offset;
         return ByteBuffer.wrap(data, index, length).order(LITTLE_ENDIAN);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -638,8 +626,7 @@ public final class Slice implements Comparable<Slice>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         if (hash != 0) {
             return hash;
         }
@@ -660,8 +647,7 @@ public final class Slice implements Comparable<Slice>
      * buffer.  This comparison is performed byte by byte using an unsigned
      * comparison.
      */
-    public int compareTo(Slice that)
-    {
+    public int compareTo(Slice that) {
         if (this == that) {
             return 0;
         }
@@ -684,8 +670,7 @@ public final class Slice implements Comparable<Slice>
      * Decodes this buffer's readable bytes into a string with the specified
      * character set name.
      */
-    public String toString(Charset charset)
-    {
+    public String toString(Charset charset) {
         return toString(0, length, charset);
     }
 
@@ -693,8 +678,7 @@ public final class Slice implements Comparable<Slice>
      * Decodes this buffer's sub-region into a string with the specified
      * character set.
      */
-    public String toString(int index, int length, Charset charset)
-    {
+    public String toString(int index, int length, Charset charset) {
         if (length == 0) {
             return "";
         }
@@ -702,8 +686,7 @@ public final class Slice implements Comparable<Slice>
         return Slices.decodeString(toByteBuffer(index, length), charset);
     }
 
-    public String toString()
-    {
+    public String toString() {
         return getClass().getSimpleName() + '(' +
                 "length=" + length() +
                 ')';

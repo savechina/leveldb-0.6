@@ -17,14 +17,30 @@
  */
 package org.iq80.leveldb.util;
 
-public final class SizeOf
-{
+/**
+ * 数据类型占用byte长度枚举定义
+ */
+public final class SizeOf {
+    /**
+     * byte 类型 占用 1 byte 8 bit
+     */
     public static final byte SIZE_OF_BYTE = 1;
+
+    /**
+     * short 类型 占用 2 byte  16 bit
+     */
     public static final byte SIZE_OF_SHORT = 2;
+
+    /**
+     * int 类型 占用 4 byte 32 bit
+     */
     public static final byte SIZE_OF_INT = 4;
+
+    /**
+     * long 类型 占用 8 byte 64 bit
+     */
     public static final byte SIZE_OF_LONG = 8;
 
-    private SizeOf()
-    {
+    private SizeOf() {
     }
 }

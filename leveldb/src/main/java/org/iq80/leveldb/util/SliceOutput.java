@@ -9,6 +9,9 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 
+/**
+ * Slice OutPutStream
+ */
 public abstract class SliceOutput extends OutputStream implements DataOutput
 {
     /**

@@ -32,6 +32,9 @@ import java.nio.charset.CodingErrorAction;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+/**
+ * Slice operate util method
+ */
 public final class Slices
 {
     public static Slice readLengthPrefixedBytes(SliceInput sliceInput)
