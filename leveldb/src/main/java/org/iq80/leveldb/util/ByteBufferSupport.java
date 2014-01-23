@@ -24,28 +24,27 @@ import java.lang.reflect.Method;
 import java.nio.MappedByteBuffer;
 
 /**
+ * 内存影射字节缓存支持操作
  */
 public class ByteBufferSupport {
 
     private static final Method unmap;
+
     static {
         Method x;
         try {
             x = FileChannelImpl.class.getDeclaredMethod("unmap", MappedByteBuffer.class);
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             throw new AssertionError(e);
         }
         x.setAccessible(true);
         unmap = x;
     }
 
-    public static void unmap(MappedByteBuffer buffer)
-    {
+    public static void unmap(MappedByteBuffer buffer) {
         try {
             unmap.invoke(null, buffer);
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             throw Throwables.propagate(ignored);
         }
     }

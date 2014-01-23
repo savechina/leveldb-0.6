@@ -25,6 +25,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+/**
+ * 常用文件操作工具类
+ */
 public class FileUtils
 {
     private static final int TEMP_DIR_ATTEMPTS = 10000;
@@ -47,6 +50,12 @@ public class FileUtils
         }
     }
 
+    /**
+     * 返回给定目录下所有的文件
+     *
+     * @param dir 目录
+     * @return 目录下所有文件列表 不可变的列表
+     */
     public static ImmutableList<File> listFiles(File dir)
     {
         File[] files = dir.listFiles();
@@ -65,11 +74,23 @@ public class FileUtils
         return ImmutableList.copyOf(files);
     }
 
+    /**
+     * 创建给定前缀的临时文件
+     * @param prefix  前缀
+     * @return 临时文件 临时文件存储目录为系统临时目录属性设置{@literal java.io.tmpdir}
+     */
     public static File createTempDir(String prefix)
     {
         return createTempDir(new File(System.getProperty("java.io.tmpdir")), prefix);
     }
 
+    /**
+     * 创建临时文件，给定父目录，与文件名前缀
+     *
+     * @param parentDir 父目录
+     * @param prefix    文件名前缀
+     * @return 临时文件
+     */
     public static File createTempDir(File parentDir, String prefix)
     {
         String baseName = "";

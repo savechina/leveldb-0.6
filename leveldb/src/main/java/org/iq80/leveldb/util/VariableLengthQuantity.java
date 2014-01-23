@@ -21,16 +21,21 @@ import java.nio.ByteBuffer;
 
 /**
  * 可变长度编码/解码操作
+ * <p/>
+ * VLQ 使用7 bit 编码 ，从低位到高位顺序二进制编码 。第8位为1 标识后面还有值
  */
-public final class VariableLengthQuantity
-{
-    private VariableLengthQuantity()
-    {
+public final class VariableLengthQuantity {
+    private VariableLengthQuantity() {
     }
 
-    
-    public static int variableLengthSize(int value)
-    {
+
+    /**
+     * 返回 int 数值 VLQ 编码字节数量
+     *
+     * @param value int
+     * @return 编码VLQ后，字节长度
+     */
+    public static int variableLengthSize(int value) {
         int size = 1;
         while ((value & (~0x7f)) != 0) {
             value >>>= 7;
@@ -39,8 +44,13 @@ public final class VariableLengthQuantity
         return size;
     }
 
-    public static int variableLengthSize(long value)
-    {
+    /**
+     * 返回 long 数值 VLQ 编码字节数量
+     *
+     * @param value
+     * @return 编码VLQ后，字节长度
+     */
+    public static int variableLengthSize(long value) {
         int size = 1;
         while ((value & (~0x7f)) != 0) {
             value >>>= 7;
@@ -49,28 +59,29 @@ public final class VariableLengthQuantity
         return size;
     }
 
-    public static void writeVariableLengthInt(int value, SliceOutput sliceOutput)
-    {
+    /**
+     * 给定int 数值 进行VLQ 编码 后写入 SliceOutput 流
+     *
+     * @param value       int 数值
+     * @param sliceOutput 输出流
+     */
+    public static void writeVariableLengthInt(int value, SliceOutput sliceOutput) {
         int highBitMask = 0x80;
         if (value < (1 << 7) && value >= 0) {
-            sliceOutput.writeByte(value);
-        }
-        else if (value < (1 << 14) && value > 0) {
-            sliceOutput.writeByte(value | highBitMask);
-            sliceOutput.writeByte(value >>> 7);
-        }
-        else if (value < (1 << 21) && value > 0) {
+            sliceOutput.writeByte(value);  //1 byte
+        } else if (value < (1 << 14) && value > 0) {
+            sliceOutput.writeByte(value | highBitMask); // low bit 1 byte
+            sliceOutput.writeByte(value >>> 7);         // high bit 1 byte
+        } else if (value < (1 << 21) && value > 0) {    // 3 byte
             sliceOutput.writeByte(value | highBitMask);
             sliceOutput.writeByte((value >>> 7) | highBitMask);
             sliceOutput.writeByte(value >>> 14);
-        }
-        else if (value < (1 << 28) && value > 0) {
+        } else if (value < (1 << 28) && value > 0) {    //4 byte
             sliceOutput.writeByte(value | highBitMask);
             sliceOutput.writeByte((value >>> 7) | highBitMask);
             sliceOutput.writeByte((value >>> 14) | highBitMask);
             sliceOutput.writeByte(value >>> 21);
-        }
-        else {
+        } else {  // 5 byte
             sliceOutput.writeByte(value | highBitMask);
             sliceOutput.writeByte((value >>> 7) | highBitMask);
             sliceOutput.writeByte((value >>> 14) | highBitMask);
@@ -79,8 +90,13 @@ public final class VariableLengthQuantity
         }
     }
 
-    public static void writeVariableLengthLong(long value, SliceOutput sliceOutput)
-    {
+    /**
+     * 给定int 数值 进行VLQ 编码 后写入 SliceOutput 流
+     *
+     * @param value       int 数值
+     * @param sliceOutput 输出流
+     */
+    public static void writeVariableLengthLong(long value, SliceOutput sliceOutput) {
         // while value more than the first 7 bits set
         while ((value & (~0x7f)) != 0) {
             sliceOutput.writeByte((int) ((value & 0x7f) | 0x80));
@@ -89,8 +105,13 @@ public final class VariableLengthQuantity
         sliceOutput.writeByte((int) value);
     }
 
-    public static int readVariableLengthInt(SliceInput sliceInput)
-    {
+    /**
+     * 从SliceInput 流内读取 VLQ 编码的int 数值
+     *
+     * @param sliceInput 字节分片输入流
+     * @return int VLQ 解码 后的数值
+     */
+    public static int readVariableLengthInt(SliceInput sliceInput) {
         int result = 0;
         for (int shift = 0; shift <= 28; shift += 7) {
             int b = sliceInput.readUnsignedByte();
@@ -106,8 +127,13 @@ public final class VariableLengthQuantity
         throw new NumberFormatException("last byte of variable length int has high bit set");
     }
 
-    public static int readVariableLengthInt(ByteBuffer sliceInput)
-    {
+    /**
+     * 从ByteBuffer内读取 VLQ 编码的int 数值
+     *
+     * @param sliceInput 字节缓存
+     * @return int VLQ 解码 后的数值
+     */
+    public static int readVariableLengthInt(ByteBuffer sliceInput) {
         int result = 0;
         for (int shift = 0; shift <= 28; shift += 7) {
             int b = sliceInput.get();
@@ -123,8 +149,13 @@ public final class VariableLengthQuantity
         throw new NumberFormatException("last byte of variable length int has high bit set");
     }
 
-    public static long readVariableLengthLong(SliceInput sliceInput)
-    {
+    /**
+     * 从SliceInput内读取 VLQ 编码的long 数值
+     *
+     * @param sliceInput 字节缓存
+     * @return long VLQ 解码 后的数值
+     */
+    public static long readVariableLengthLong(SliceInput sliceInput) {
         long result = 0;
         for (int shift = 0; shift <= 63; shift += 7) {
             long b = sliceInput.readUnsignedByte();

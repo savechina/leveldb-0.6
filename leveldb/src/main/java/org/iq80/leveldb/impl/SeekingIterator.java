@@ -21,6 +21,11 @@ import com.google.common.collect.PeekingIterator;
 
 import java.util.Map.Entry;
 
+/**
+ * 数据搜索查找迭代器。
+ * @param <K> 数值KEY
+ * @param <V> KEY对应的数值
+ */
 public interface SeekingIterator<K,V> extends PeekingIterator<Entry<K, V>>
 {
     /**

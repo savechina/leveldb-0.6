@@ -21,28 +21,48 @@ import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
-public class IntVector
-{
+/**
+ * 整型向量 动态的整型数组
+ * <p/>
+ * 不是线程安全的数据类型
+ */
+public class IntVector {
+    /**
+     * 大小
+     */
     private int size;
+
+    /**
+     * 原始数据数组
+     */
     private int[] values;
 
-    public IntVector(int initialCapacity)
-    {
+    public IntVector(int initialCapacity) {
         this.values = new int[initialCapacity];
     }
 
-    public int size()
-    {
+    /**
+     * 返回整形向量数值数量
+     *
+     * @return 数量
+     */
+    public int size() {
         return size;
     }
 
-    public void clear()
-    {
+    /**
+     * 清除向量内容
+     */
+    public void clear() {
         size = 0;
     }
 
-    public void add(int value)
-    {
+    /**
+     * 添加 整型数值到 {@code IntVector}
+     *
+     * @param value int 数值
+     */
+    public void add(int value) {
         Preconditions.checkArgument(size + 1 >= 0, "Invalid minLength: %s", size + 1);
 
         ensureCapacity(size + 1);
@@ -50,29 +70,41 @@ public class IntVector
         values[size++] = value;
     }
 
-    private void ensureCapacity(int minCapacity)
-    {
+    /**
+     * 数组容量扩充
+     *
+     * @param minCapacity 最小容量
+     */
+    private void ensureCapacity(int minCapacity) {
         if (values.length >= minCapacity) {
             return;
         }
 
-
+        //当数组容量不足时，进行数组容量扩充
         int newLength = values.length;
         if (newLength == 0) {
             newLength = 1;
-        }
-        else {
+        } else {
             newLength <<= 1;
 
         }
         values = Arrays.copyOf(values, newLength);
     }
 
-    public int[] values()
-    {
+    /**
+     * 以整型数组返回向量数值
+     *
+     * @return 整型数组 向量原始数据
+     */
+    public int[] values() {
         return Arrays.copyOf(values, size);
     }
 
+    /**
+     * 将向量里的数据写入给定的分片流里
+     *
+     * @param sliceOutput 分片流
+     */
     public void write(SliceOutput sliceOutput) {
         for (int index = 0; index < size; index++) {
             sliceOutput.writeInt(values[index]);
@@ -80,8 +112,7 @@ public class IntVector
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("IntVector");
         sb.append("{size=").append(size);
