@@ -23,11 +23,24 @@ import org.iq80.leveldb.util.Slices;
 import org.iq80.leveldb.util.VariableLengthQuantity;
 import org.iq80.leveldb.util.SliceOutput;
 
+/**
+ * 二进制数据块处理器
+ */
 public class BlockHandle
 {
+    /**
+     * 最大的编码长度
+     */
     public static final int MAX_ENCODED_LENGTH = 10 + 10;
 
+    /**
+     * 块偏移量
+     */
     private final long offset;
+
+    /**
+     * 数据大小
+     */
     private final int dataSize;
 
     BlockHandle(long offset, int dataSize)
@@ -36,16 +49,30 @@ public class BlockHandle
         this.dataSize = dataSize;
     }
 
+    /**
+     * 返回当前块偏移量
+     * @return 块偏移量
+     */
     public long getOffset()
     {
         return offset;
     }
 
+    /**
+     * 返回块数据大小
+     * @return 块数据大小
+     */
     public int getDataSize()
     {
         return dataSize;
     }
 
+    /**
+     * 返回全块的大小
+     *
+     * 全块数据大小=块数据大小+块尾编码长度
+     * @return 全块的大小
+     */
     public int getFullBlockSize() {
         return dataSize + BlockTrailer.ENCODED_LENGTH;
     }
@@ -91,11 +118,17 @@ public class BlockHandle
         return sb.toString();
     }
 
-    public static BlockHandle readBlockHandle(SliceInput sliceInput)
-    {
-        long offset = VariableLengthQuantity.readVariableLengthLong(sliceInput);
-        long size = VariableLengthQuantity.readVariableLengthLong(sliceInput);
+    /**
+     * 通过给定分片输入流{@code SliceInput}，返回读取数据块处理器
+     *
+     * @param sliceInput 字节分片输入流
+     * @return 读取数据块处理器 {@code BlockHandle}
+     */
+    public static BlockHandle readBlockHandle(SliceInput sliceInput) {
+        long offset = VariableLengthQuantity.readVariableLengthLong(sliceInput); //块偏移量
+        long size = VariableLengthQuantity.readVariableLengthLong(sliceInput);   //块数据大小
 
+        //最大支持的块大小为 Integer.MAX_VALUE
         if (size > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Blocks can not be larger than Integer.MAX_VALUE");
         }
@@ -103,15 +136,27 @@ public class BlockHandle
         return new BlockHandle(offset, (int) size);
     }
 
-    public static Slice writeBlockHandle(BlockHandle blockHandle)
-    {
+    /**
+     * 通过块处理器，初始化默认分配块内存，返回块数据分片
+     *
+     * @param blockHandle 块处理器
+     * @return 块数据分片
+     */
+    public static Slice writeBlockHandle(BlockHandle blockHandle) {
+        //默认分配块内存大小
         Slice slice = Slices.allocate(MAX_ENCODED_LENGTH);
         SliceOutput sliceOutput = slice.output();
         writeBlockHandleTo(blockHandle, sliceOutput);
         return slice.slice();
     }
-    public static void writeBlockHandleTo(BlockHandle blockHandle, SliceOutput sliceOutput)
-    {
+
+    /**
+     * 给定块处理器与数据分片输出流，VLQ编码写入块处理器
+     *
+     * @param blockHandle 块处理器
+     * @param sliceOutput 分片输出流
+     */
+    public static void writeBlockHandleTo(BlockHandle blockHandle, SliceOutput sliceOutput) {
         VariableLengthQuantity.writeVariableLengthLong(blockHandle.offset, sliceOutput);
         VariableLengthQuantity.writeVariableLengthLong(blockHandle.dataSize, sliceOutput);
     }

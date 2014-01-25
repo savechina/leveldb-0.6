@@ -32,6 +32,9 @@ import java.nio.channels.FileChannel;
 import java.util.Comparator;
 import java.util.concurrent.Callable;
 
+/**
+ *
+ */
 abstract public class Table implements SeekingIterable<Slice, Slice>
 {
     protected final String name;

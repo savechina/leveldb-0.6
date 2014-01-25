@@ -26,6 +26,9 @@ import java.util.Comparator;
 
 import static org.iq80.leveldb.CompressionType.SNAPPY;
 
+/**
+ * 文件通道表
+ */
 public class FileChannelTable extends Table
 {
     public FileChannelTable(String name, FileChannel fileChannel, Comparator<Slice> comparator, boolean verifyChecksums)

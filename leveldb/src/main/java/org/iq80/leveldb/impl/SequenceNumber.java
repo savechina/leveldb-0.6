@@ -19,6 +19,9 @@ package org.iq80.leveldb.impl;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * 数据库序列号
+ */
 public final class SequenceNumber
 {
     // We leave eight bits empty at the bottom so a type and sequence#

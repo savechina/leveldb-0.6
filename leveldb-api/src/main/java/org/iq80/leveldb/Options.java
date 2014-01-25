@@ -42,6 +42,7 @@ public class Options {
      */
     private int maxOpenFiles = 1000;
 
+    //block 中对 key 做前缀压缩的区间长度
     private int blockRestartInterval = 16;
 
     /**
@@ -60,7 +61,7 @@ public class Options {
     private boolean verifyChecksums = true;
 
     /**
-     * 是否是强校验
+     * 是否保存中间的错误状态(RecoverLog/compact),compact 时是否读到的 block 做检验。
      */
     private boolean paranoidChecks = false;
 

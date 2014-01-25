@@ -26,6 +26,10 @@ import org.iq80.leveldb.util.SliceOutput;
 import static com.google.common.base.Charsets.UTF_8;
 import static org.iq80.leveldb.util.SizeOf.SIZE_OF_LONG;
 
+
+/**
+ * 数据库内部Key
+ */
 public class InternalKey
 {
     private final Slice userKey;

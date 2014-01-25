@@ -21,8 +21,14 @@ import com.google.common.base.Function;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 数据库文件元信息
+ */
 public class FileMetaData
 {
+    /**
+     * 获取文件最大的 Uder
+     */
     public static Function<FileMetaData, InternalKey> GET_LARGEST_USER_KEY = new Function<FileMetaData, InternalKey>()
     {
         @Override
@@ -32,6 +38,9 @@ public class FileMetaData
         }
     };
 
+    /**
+     * 文件号
+     */
     private final long number;
 
     /**

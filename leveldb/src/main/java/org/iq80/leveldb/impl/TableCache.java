@@ -34,9 +34,18 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * 表缓存
+ */
 public class TableCache
 {
+    /**
+     * 表cache 文件号,表文件
+     */
     private final LoadingCache<Long, TableAndFile> cache;
+    /**
+     * 表析构处理器
+     */
     private final Finalizer<Table> finalizer = new Finalizer<Table>(1);
 
     public TableCache(final File databaseDir, int tableCacheSize, final UserComparator userComparator, final boolean verifyChecksums)
@@ -54,18 +63,29 @@ public class TableCache
                 .build(new CacheLoader<Long, TableAndFile>() {
                     public TableAndFile load(Long fileNumber)
                             throws IOException {
+                        //根据文件号，创建表文件
                         return new TableAndFile(databaseDir, fileNumber, userComparator, verifyChecksums);
                     }
                 });
     }
 
-    public InternalTableIterator newIterator(FileMetaData file)
-    {
+    /**
+     * 给定文件元信息，创建文件对应内部表遍历迭代器
+     *
+     * @param file 文件元信息
+     * @return 文件号对应 内部表遍历迭代器 {@code InternalTableIterator}
+     */
+    public InternalTableIterator newIterator(FileMetaData file) {
         return newIterator(file.getNumber());
     }
 
-    public InternalTableIterator newIterator(long number)
-    {
+    /**
+     * 给定文件号创建文件内部表遍历迭代器
+     *
+     * @param number 文件号
+     * @return 文件号对应 内部表遍历迭代器 {@code InternalTableIterator}
+     */
+    public InternalTableIterator newIterator(long number) {
         return new InternalTableIterator(getTable(number).iterator());
     }
 
@@ -73,6 +93,11 @@ public class TableCache
         return getTable(file.getNumber()).getApproximateOffsetOf(key);
     }
 
+    /**
+     * 给定文件号 返回文件号对应数据表
+     * @param number 文件号
+     * @return 文件映射表
+     */
     private Table getTable(long number)
     {
         Table table;
@@ -89,16 +114,30 @@ public class TableCache
         return table;
     }
 
+    /**
+     * 关闭表缓存
+     */
     public void close() {
+        //无效所有缓存数据
         cache.invalidateAll();
+        //销毁表析构器
         finalizer.destroy();
     }
 
+    /**
+     * 踢出给定文件号的表文件
+     * @param number 文件号
+     */
     public void evict(long number)
     {
         cache.invalidate(number);
     }
 
+    /**
+     * 数据表
+     *
+     * 给定数据库目录，与文件号 创建文件表
+     */
     private static final class TableAndFile
     {
         private final Table table;
@@ -111,6 +150,7 @@ public class TableCache
             File tableFile = new File(databaseDir, tableFileName);
             fileChannel = new FileInputStream(tableFile).getChannel();
             try {
+                //使用内存映射文件
                 if( Iq80DBFactory.USE_MMAP ) {
                     table = new MMapTable(tableFile.getAbsolutePath(), fileChannel, userComparator, verifyChecksums);
                 } else {

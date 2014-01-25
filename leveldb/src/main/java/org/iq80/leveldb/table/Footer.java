@@ -27,11 +27,24 @@ import static org.iq80.leveldb.table.BlockHandle.readBlockHandle;
 import static org.iq80.leveldb.table.BlockHandle.writeBlockHandleTo;
 import static org.iq80.leveldb.util.SizeOf.SIZE_OF_LONG;
 
+/**
+ * 表尾
+ */
 public class Footer
 {
+    /**
+     * 编码长度
+     */
     public static final int ENCODED_LENGTH = (BlockHandle.MAX_ENCODED_LENGTH * 2) + SIZE_OF_LONG;
 
+    /**
+     * 元数据索引块处理器
+     */
     private final BlockHandle metaindexBlockHandle;
+
+    /**
+     * 索引块处理器
+     */
     private final BlockHandle indexBlockHandle;
 
     Footer(BlockHandle metaindexBlockHandle, BlockHandle indexBlockHandle)
@@ -50,6 +63,11 @@ public class Footer
         return indexBlockHandle;
     }
 
+    /**
+     * 读取表尾
+     * @param slice 数据片
+     * @return  表尾
+     */
     public static Footer readFooter(Slice slice)
     {
         Preconditions.checkNotNull(slice, "slice is null");
@@ -71,6 +89,11 @@ public class Footer
         return new Footer(metaindexBlockHandle, indexBlockHandle);
     }
 
+    /**
+     * 写入表尾 返回数据分片
+     * @param Footer 表尾
+     * @return 写入表尾的数据分片
+     */
     public static Slice writeFooter(Footer Footer)
     {
         Slice slice = Slices.allocate(ENCODED_LENGTH);
@@ -78,6 +101,13 @@ public class Footer
         return slice;
     }
 
+    /**
+     * 将表尾写入给定的数据分片输出流 。
+     * 表尾编码
+     *
+     * @param footer      表尾
+     * @param sliceOutput 数据分片
+     */
     public static void writeFooter(Footer footer, SliceOutput sliceOutput)
     {
         // remember the starting write index so we can calculate the padding

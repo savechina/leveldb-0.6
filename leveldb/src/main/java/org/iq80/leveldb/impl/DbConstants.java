@@ -17,6 +17,9 @@
  */
 package org.iq80.leveldb.impl;
 
+/**
+ * 数据库配置常量
+ */
 public class DbConstants
 {
     public static final int MAJOR_VERSION = 0;

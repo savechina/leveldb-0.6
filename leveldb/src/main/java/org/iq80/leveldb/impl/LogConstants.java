@@ -23,12 +23,15 @@ import static org.iq80.leveldb.util.SizeOf.SIZE_OF_BYTE;
 import static org.iq80.leveldb.util.SizeOf.SIZE_OF_INT;
 import static org.iq80.leveldb.util.SizeOf.SIZE_OF_SHORT;
 
-public final class LogConstants
-{
+/**
+ * 日志配置常量
+ */
+public final class LogConstants {
     // todo find new home for these
-
+    //块大小
     public static final int BLOCK_SIZE = 32768;
 
+    //日志头大小
     // Header is checksum (4 bytes), type (1 byte), length (2 bytes).
     public static final int HEADER_SIZE = SIZE_OF_INT + SIZE_OF_BYTE + SIZE_OF_SHORT;
 

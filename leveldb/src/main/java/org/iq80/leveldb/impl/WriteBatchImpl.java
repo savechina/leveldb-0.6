@@ -28,9 +28,18 @@ import java.util.Map.Entry;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+/**
+ * 批量写入实现
+ */
 public class WriteBatchImpl implements WriteBatch
 {
+    /**
+     * 批量写入实体
+     */
     private List<Entry<Slice, Slice>> batch = newArrayList();
+    /**
+     *批量写入数据总大小
+     */
     private int approximateSize;
 
     public int getApproximateSize()
@@ -38,11 +47,21 @@ public class WriteBatchImpl implements WriteBatch
         return approximateSize;
     }
 
+    /**
+     * 批量更新数据大小
+     * @return
+     */
     public int size()
     {
         return batch.size();
     }
 
+    /**
+     *  更新数据
+     * @param key   数据Key
+     * @param value 数据Value
+     * @return
+     */
     @Override
     public WriteBatchImpl put(byte[] key, byte[] value)
     {
@@ -53,6 +72,12 @@ public class WriteBatchImpl implements WriteBatch
         return this;
     }
 
+    /**
+     * 写入给定的KEY/VALUE 数据
+     * @param key 数据key
+     * @param value 数据value
+     * @return 批量操作
+     */
     public WriteBatchImpl put(Slice key, Slice value)
     {
         Preconditions.checkNotNull(key, "key is null");
@@ -62,6 +87,11 @@ public class WriteBatchImpl implements WriteBatch
         return this;
     }
 
+    /**
+     * 删除给定的KEY
+     * @param key 数据Key {@code byte[]}
+     * @return 批量操作
+     */
     @Override
     public WriteBatchImpl delete(byte[] key)
     {
@@ -71,6 +101,11 @@ public class WriteBatchImpl implements WriteBatch
         return this;
     }
 
+    /**
+     * 删除给定的key {@code Slice}
+     * @param key
+     * @return
+     */
     public WriteBatchImpl delete(Slice key)
     {
         Preconditions.checkNotNull(key, "key is null");

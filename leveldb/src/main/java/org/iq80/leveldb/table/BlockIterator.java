@@ -30,13 +30,34 @@ import java.util.NoSuchElementException;
 
 import static org.iq80.leveldb.util.SizeOf.SIZE_OF_INT;
 
+/**
+ * 块遍历迭代器
+ */
 public class BlockIterator implements SeekingIterator<Slice, Slice>
 {
+    /**
+     * 块数据
+     */
     private final SliceInput data;
+
+    /**
+     * 重新开始位置
+     */
     private final Slice restartPositions;
+
+    /**
+     * 重新开始数量
+     */
     private final int restartCount;
+
+    /**
+     * 块分片比较器
+     */
     private final Comparator<Slice> comparator;
 
+    /**
+     * 下个块实体
+     */
     private BlockEntry nextEntry;
 
     public BlockIterator(Slice data, Slice restartPositions, Comparator<Slice> comparator)
@@ -56,12 +77,20 @@ public class BlockIterator implements SeekingIterator<Slice, Slice>
         seekToFirst();
     }
 
+    /**
+     * 是否还有块实体
+     * @return true 有/ false 没有
+     */
     @Override
     public boolean hasNext()
     {
         return nextEntry != null;
     }
 
+    /**
+     * 获取下一块实体
+     * @return 下一块实体，不改变块状态
+     */
     @Override
     public BlockEntry peek()
     {
@@ -71,6 +100,10 @@ public class BlockIterator implements SeekingIterator<Slice, Slice>
         return nextEntry;
     }
 
+    /**
+     * 获取下个块实体
+     * @return 下个块实体
+     */
     @Override
     public BlockEntry next()
     {

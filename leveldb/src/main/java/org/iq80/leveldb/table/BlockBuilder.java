@@ -28,6 +28,9 @@ import java.util.Comparator;
 
 import static org.iq80.leveldb.util.SizeOf.SIZE_OF_INT;
 
+/**
+ * 数据块构造器
+ */
 public class BlockBuilder
 {
     private final int blockRestartInterval;

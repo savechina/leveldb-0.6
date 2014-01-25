@@ -33,6 +33,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.iq80.leveldb.CompressionType.SNAPPY;
 
+/**
+ * 内存映射文件表
+ */
 public class MMapTable extends Table
 {
     private final AtomicBoolean closed = new AtomicBoolean(false);

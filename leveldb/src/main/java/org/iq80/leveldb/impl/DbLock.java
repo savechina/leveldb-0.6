@@ -29,15 +29,30 @@ import java.nio.channels.FileLock;
 
 import static java.lang.String.format;
 
-public class DbLock
-{
+/**
+ * 数据库锁
+ */
+public class DbLock {
+
+    /**
+     * 数据库锁文件
+     */
     private final File lockFile;
     private final FileChannel channel;
+
+    /**
+     * 文件锁 数据库锁
+     */
     private final FileLock lock;
 
+    /**
+     * 给定数据库锁文件 创建数据库锁
+     *
+     * @param lockFile 锁文件
+     * @throws IOException 不能获取数据库锁
+     */
     public DbLock(File lockFile)
-            throws IOException
-    {
+            throws IOException {
         Preconditions.checkNotNull(lockFile, "lockFile is null");
         this.lockFile = lockFile;
 
@@ -45,8 +60,7 @@ public class DbLock
         channel = new RandomAccessFile(lockFile, "rw").getChannel();
         try {
             lock = channel.tryLock();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Closeables.closeQuietly(channel);
             throw e;
         }
@@ -56,27 +70,29 @@ public class DbLock
         }
     }
 
-    public boolean isValid()
-    {
+    /**
+     * 判断锁是否有效
+     * @return
+     */
+    public boolean isValid() {
         return lock.isValid();
     }
 
-    public void release()
-    {
+    /**
+     * 释放数据库锁
+     */
+    public void release() {
         try {
             lock.release();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Throwables.propagate(e);
-        }
-        finally {
+        } finally {
             Closeables.closeQuietly(channel);
         }
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("DbLock");
         sb.append("{lockFile=").append(lockFile);

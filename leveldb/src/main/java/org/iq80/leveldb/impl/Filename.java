@@ -26,11 +26,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 数据库文件名
+ */
 public class Filename
 {
+    /**
+     * 文件类型
+     */
     public enum FileType
     {
+        /**
+         * 日志
+         */
         LOG,
+        /**
+         * 数据库锁文件
+         */
         DB_LOCK,
         TABLE,
         DESCRIPTOR,
@@ -181,6 +193,12 @@ public class Filename
         return ImmutableList.copyOf(files);
     }
 
+    /**
+     * 创建文件名
+     * @param number 文件号
+     * @param suffix 后缀
+     * @return  文件名
+     */
     private static String makeFileName(long number, String suffix)
     {
         Preconditions.checkArgument(number >= 0, "number is negative");
@@ -188,11 +206,23 @@ public class Filename
         return String.format("%06d.%s", number, suffix);
     }
 
+    /**
+     * 删除前缀
+     * @param value
+     * @param prefix
+     * @return
+     */
     private static String removePrefix(String value, String prefix)
     {
         return value.substring(prefix.length());
     }
 
+    /**
+     * 删除后缀
+     * @param value
+     * @param suffix
+     * @return
+     */
     private static String removeSuffix(String value, String suffix)
     {
         return value.substring(0, value.length() - suffix.length());

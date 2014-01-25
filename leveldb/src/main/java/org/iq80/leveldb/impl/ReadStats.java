@@ -17,9 +17,18 @@
  */
 package org.iq80.leveldb.impl;
 
+/**
+ * 数据库读取统计
+ */
 public class ReadStats
 {
+    /**
+     * 查找文件级别 默认是-1
+     */
     private int seekFileLevel = -1;
+    /**
+     * 当前读取文件
+     */
     private FileMetaData seekFile;
 
     public void clear() {
