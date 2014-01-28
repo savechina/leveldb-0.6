@@ -500,6 +500,13 @@ public class DbImpl implements DB
         }
     }
 
+    /**
+     * 恢复日志文件
+     * @param fileNumber 日志文件编号
+     * @param edit VersionEdit
+     * @return 最大序列号
+     * @throws IOException
+     */
     private long recoverLogFile(long fileNumber, VersionEdit edit)
             throws IOException
     {
@@ -508,7 +515,7 @@ public class DbImpl implements DB
         FileChannel channel = new FileInputStream(file).getChannel();
 
         LogMonitor logMonitor = LogMonitors.logMonitor();
-        LogReader logReader = new LogReader(channel, logMonitor, true, 0);
+        LogReader logReader = new LogReader(channel, logMonitor, true, 0);  //log file reader
 
         // Log(options_.info_log, "Recovering log #%llu", (unsigned long long) log_number);
 
@@ -522,7 +529,11 @@ public class DbImpl implements DB
                 logMonitor.corruption(sliceInput.available(), "log record too small");
                 continue;
             }
+
+            // read sequence number
             long sequenceBegin = sliceInput.readLong();
+
+            //read batch update size
             int updateSize = sliceInput.readInt();
 
             // read entries
@@ -532,6 +543,8 @@ public class DbImpl implements DB
             if (memTable == null) {
                 memTable = new MemTable(internalKeyComparator);
             }
+
+            //write record to memTable
             writeBatch.forEach(new InsertIntoHandler(memTable, sequenceBegin));
 
             // update the maxSequence
@@ -917,6 +930,13 @@ public class DbImpl implements DB
         }
     }
 
+    /**
+     * 将MemTable record data write to Level0 table
+     * @param mem MemTable
+     * @param edit VersionEdit
+     * @param base Version
+     * @throws IOException
+     */
     private void writeLevel0Table(MemTable mem, VersionEdit edit, Version base)
             throws IOException
     {
@@ -965,10 +985,10 @@ public class DbImpl implements DB
             for (Entry<InternalKey, Slice> entry : data) {
                 // update keys
                 InternalKey key = entry.getKey();
-                if (smallest == null) {
+                if (smallest == null) { //first is smallest
                     smallest = key;
                 }
-                largest = key;
+                largest = key; //last is largest
 
                 tableBuilder.add(key.encode(), entry.getValue());
             }
@@ -1227,8 +1247,14 @@ public class DbImpl implements DB
         return versions.getMaxNextLevelOverlappingBytes();
     }
 
+    /**
+     * 数据库归并状态
+     */
     private static class CompactionState
     {
+        /**
+         *数据库归并操作
+         */
         private final Compaction compaction;
 
         private final List<FileMetaData> outputs = newArrayList();
@@ -1258,6 +1284,9 @@ public class DbImpl implements DB
         }
     }
 
+    /**
+     * 手工归并
+     */
     private static class ManualCompaction
     {
         private final int level;
@@ -1272,6 +1301,13 @@ public class DbImpl implements DB
         }
     }
 
+    /**
+     * 从二进制字节记录读取批量更新数据
+     * @param record 记录数据
+     * @param updateSize 更新数量
+     * @return 批量更新对象
+     * @throws IOException
+     */
     private WriteBatchImpl readWriteBatch(SliceInput record, int updateSize)
             throws IOException
     {
@@ -1299,8 +1335,24 @@ public class DbImpl implements DB
         return writeBatch;
     }
 
+    /**
+     * 写入批量写操作处理
+     * @param updates 批量更新数据
+     * @param sequenceBegin 开始序列号
+     * @return 批量写入记录
+     */
     private Slice writeWriteBatch(WriteBatchImpl updates, long sequenceBegin)
     {
+        /*
+         format:
+            sequence  8byte
+            batch size 4byte
+            value type 1byte
+            key length VLQ int encode
+            key data
+            value length VLQ int encode
+            value data
+         */
         Slice record = Slices.allocate(SIZE_OF_LONG + SIZE_OF_INT + updates.getApproximateSize());
         final SliceOutput sliceOutput = record.output();
         sliceOutput.writeLong(sequenceBegin);
@@ -1325,6 +1377,9 @@ public class DbImpl implements DB
         return record.slice(0, sliceOutput.size());
     }
 
+    /**
+     * 数据批量插入数据库处理器
+     */
     private static class InsertIntoHandler implements Handler
     {
         private long sequence;
@@ -1349,6 +1404,9 @@ public class DbImpl implements DB
         }
     }
 
+    /**
+     * 数据库关闭异常
+     */
     public static class DatabaseShutdownException extends DBException {
         public DatabaseShutdownException()
         {
@@ -1359,10 +1417,12 @@ public class DbImpl implements DB
             super(message);
         }
     }
-    
+
+    /**
+     * 数据库后台处理异常
+     */
     public static class BackgroundProcessingException extends DBException {
-        public BackgroundProcessingException(Throwable cause)
-        {
+        public BackgroundProcessingException(Throwable cause) {
             super(cause);
         }
     }

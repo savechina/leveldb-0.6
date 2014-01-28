@@ -129,6 +129,10 @@ public class LogReader
         return true;
     }
 
+    /**
+     * return record from log file
+     * @return whole record  data
+     */
     public Slice readRecord()
     {
         recordScratch.reset();

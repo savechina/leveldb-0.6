@@ -34,8 +34,8 @@ public class Compaction
 
     // Each compaction reads inputs from "level" and "level+1"
     private final List<FileMetaData> levelInputs;
-    private final List<FileMetaData> levelUpInputs;
-    private final List<FileMetaData> grandparents;
+    private final List<FileMetaData> levelUpInputs;  //父级 level +1
+    private final List<FileMetaData> grandparents;  //祖父级 level +2
     private final List<FileMetaData>[] inputs;
 
     private final long maxOutputFileSize;
